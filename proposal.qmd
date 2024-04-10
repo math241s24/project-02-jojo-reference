@@ -12,6 +12,9 @@ editor: visual
 #| warning: false
 
 library(tidyverse)
+library(rvest)
+library(readr)
+library(httr)
 ```
 
 ## Dataset
@@ -38,3 +41,26 @@ I'll have to learn how to make and use a custom Lexicon and it might be a challe
 I still have to iron out my thoughts and start doing research.
 
 #sorry this is an incomplete proposal, Im so goddamn braindead
+
+
+
+
+OK lets get coding
+
+```{r}
+#first we have got to webscrape a bunch of non-tidy tables
+read_html(
+  
+)
+
+
+
+
+
+
+```
+
+
+
+
+

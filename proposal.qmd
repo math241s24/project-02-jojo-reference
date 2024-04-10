@@ -49,11 +49,17 @@ OK lets get coding
 
 ```{r}
 #first we have got to webscrape a bunch of non-tidy tables
-read_html(
-  
-)
+# Define the URL
+url_1 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=95929"
 
+# Read the HTML content from the webpage
+episode1 <- read_html(url_1)
 
+# Extract the text content of the "page-body" element
+episode_1_text <- html_text(html_nodes(episode1, ".page-body"))
+
+# View the extracted text
+print(episode_1_text)
 
 
 

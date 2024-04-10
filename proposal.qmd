@@ -24,11 +24,12 @@ library(tidyverse)
 ```
 
 ## Reason for Choosing this Dataset
- -> Im gonna use (hopefully all of Megan Thee Stallion's song lyrics)
+
+-\> Im gonna use (hopefully all of Megan Thee Stallion's song lyrics)
 
 ## Questions and Analysis Plan
- -> I want to build a package to search text files for references to the ongoing animated series "Jojo's Bizarre Adventure" (a show known for people making references to it) and apply it to Megan Thee Stallion Lyrics (she's a fan). Because the show is about the construction of bizarre scenarios, references often include just enough identifying information to refer to a specific moment.
-I think the best way to approach this task is to start with a wide net that will search for single words or word pairs that could be a reference and narrow down to only songs with potential references. Then Search for accompanying words that indicate certain reference points.
+
+-\> I want to build a package to search text files for references to the ongoing animated series "Jojo's Bizarre Adventure" (a show known for people making references to it) and apply it to Megan Thee Stallion Lyrics (she's a fan). Because the show is about the construction of bizarre scenarios, references often include just enough identifying information to refer to a specific moment. I think the best way to approach this task is to start with a wide net that will search for single words or word pairs that could be a reference and narrow down to only songs with potential references. Then Search for accompanying words that indicate certain reference points.
 
 I think I will start with a list of potential "reference points" and build a list of indicators for each.
 

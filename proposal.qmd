@@ -11,6 +11,8 @@ editor: visual
 #| message: false
 #| warning: false
 
+install.packages("RSelenium")
+
 library(tidyverse)
 library(rvest)
 library(readr)
@@ -48,7 +50,7 @@ I still have to iron out my thoughts and start doing research.
 OK lets get coding
 
 ```{r}
-#first we have got to webscrape a bunch of non-tidy tables
+#first we have got to webscrape a bunch of non-tidy pages
 # Define the URL
 url_1 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=95929"
 

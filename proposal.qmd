@@ -11,9 +11,16 @@ editor: visual
 #| message: false
 #| warning: false
 
-install.packages("RSelenium")
+#install.packages("RSelenium")
+#install.packages("selenider")
+#install.packages("chromote")
+#install.packages("selenium")
 
 library(tidyverse)
+library(RSelenium)
+library(selenider)
+library(chromote)
+library(selenium)
 library(rvest)
 library(readr)
 library(httr)
@@ -68,7 +75,43 @@ print(episode_1_text)
 
 ```
 
+     
+
+```{r}
+
+# Start a remote driver (e.g., using Firefox)
+driver <- rsDriver(browser = "firefox")
+remDr <- driver[["client"]]
+
+# Navigate to the homepage
+remDr$navigate("https://transcripts.foreverdreaming.org/viewforum.php?f=1721")
+
+# Extracting all links
+all_links <- remDr$findElements(using = "css selector", value = "a[href]")
+
+# Filter links based on regex pattern
+#this is a REgular EXpression (regex) that describes an aphanumeric sequence with multiple possible forms, "d" stands for "any number 0-9"
+#I am saving this sequence because it matches the nomenclature of the individual episode scripts from the respository of script for JOJOS bizarre adventure that I am trying to scrape
+regex <- "0/d\\d+/d\\d+"
+filtered_links <- Filter(function(link) {
+  url <- link$getElementAttribute("href")[[1]]
+  grepl(regex, url)
+}, all_links)
+
+# Loop through filtered links and scrape text
+for (link in filtered_links) {
+  url <- link$getElementAttribute("href")[[1]]
+  remDr$navigate(url)
+  # Scrape text from the page and do something with it
+}
+
+# Stop the RSelenium server
+remDr$close()
+driver$server$stop()
 
 
+
+
+```
 
 

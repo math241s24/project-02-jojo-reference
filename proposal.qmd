@@ -75,13 +75,51 @@ print(episode_1_text)
 
 ```
 
-     
+debugging stuff:
+```{r}
+#DEBUGGING VERSION OF THE BELLOW CODE
+# Start a remote driver (e.g., using Firefox)
+driver <- rsDriver(browser = "firefox")
+remDr <- driver[["client"]]
+
+# Navigate to the homepage
+url <- "https://transcripts.foreverdreaming.org/viewforum.php?f=1721"
+cat("Navigating to URL:", url, "\n")
+remDr$navigate(url)
+
+# Check for any errors during navigation
+if (remDr$getStatus()$state != "success") {
+  stop("Error navigating to URL:", url)
+}
+
+# Extracting all links
+all_links <- remDr$findElements(using = "css selector", value = "a[href]")
+
+# Filter links based on regex pattern
+# ...
+
+# Loop through filtered links and scrape text
+# ...
+
+# Stop the RSelenium server
+remDr$close()
+driver$server$stop()
+
+```
 
 ```{r}
 
 # Start a remote driver (e.g., using Firefox)
 driver <- rsDriver(browser = "firefox")
 remDr <- driver[["client"]]
+
+#specifying path to the geckodriver executable via the 'extra capabilities' argument
+driver <- rsDriver(browser = "firefox", extraCapabilities = list(marionette = TRUE, "moz:firefoxOptions" = list(
+  binary = "path/to/firefox",
+  "moz:firefoxOptions" = list(
+    args = list("--headless")
+  )
+)))
 
 # Navigate to the homepage
 remDr$navigate("https://transcripts.foreverdreaming.org/viewforum.php?f=1721")
@@ -90,7 +128,7 @@ remDr$navigate("https://transcripts.foreverdreaming.org/viewforum.php?f=1721")
 all_links <- remDr$findElements(using = "css selector", value = "a[href]")
 
 # Filter links based on regex pattern
-#this is a REgular EXpression (regex) that describes an aphanumeric sequence with multiple possible forms, "d" stands for "any number 0-9"
+#this is a REgular EXpression (regex) that describes an alphanumeric sequence with multiple possible forms, "d" stands for "any number 0-9"
 #I am saving this sequence because it matches the nomenclature of the individual episode scripts from the respository of script for JOJOS bizarre adventure that I am trying to scrape
 regex <- "0/d\\d+/d\\d+"
 filtered_links <- Filter(function(link) {

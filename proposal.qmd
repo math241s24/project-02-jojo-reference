@@ -75,22 +75,26 @@ print(episode_1_text)
 
 ```
 
-debugging stuff:
+debugging stuff: (no maybe the right thing)
 ```{r}
-#DEBUGGING VERSION OF THE BELLOW CODE
-# Start a remote driver (e.g., using Firefox)
-driver <- rsDriver(browser = "firefox")
+# Start a remote driver (e.g., using Firefox) and specify geckodriver path
+driver <- rsDriver(browser = "firefox", extraCapabilities = list(marionette = TRUE, "moz:firefoxOptions" = list(
+  binary = "path/to/firefox",
+  "moz:firefoxOptions" = list(
+    args = list("--headless")
+  ),
+  "webdriver.gecko.driver" = "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath\\geckodriver.exe"
+)))
 remDr <- driver[["client"]]
 
-# Navigate to the homepage
-url <- "https://transcripts.foreverdreaming.org/viewforum.php?f=1721"
-cat("Navigating to URL:", url, "\n")
-remDr$navigate(url)
+# Debugging: Print message before navigation
+cat("Navigating to URL: https://transcripts.foreverdreaming.org/viewforum.php?f=1721\n")
 
-# Check for any errors during navigation
-if (remDr$getStatus()$state != "success") {
-  stop("Error navigating to URL:", url)
-}
+# Navigate to the homepage
+remDr$navigate("https://transcripts.foreverdreaming.org/viewforum.php?f=1721")
+
+# Debugging: Print message after navigation
+cat("Navigation completed.\n")
 
 # Extracting all links
 all_links <- remDr$findElements(using = "css selector", value = "a[href]")
@@ -107,6 +111,7 @@ driver$server$stop()
 
 ```
 
+original
 ```{r}
 
 # Start a remote driver (e.g., using Firefox)

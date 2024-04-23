@@ -11,7 +11,7 @@ editor: visual
 #| message: false
 #| warning: false
 
-#install.packages("RSelenium")
+# install.packages("RSelenium")
 #install.packages("selenider")
 #install.packages("chromote")
 #install.packages("selenium")
@@ -37,11 +37,11 @@ library(httr)
 
 ## Reason for Choosing this Dataset
 
--\> Im gonna use (hopefully all of Megan Thee Stallion's song lyrics)
+-/> Im gonna use (hopefully all of Megan Thee Stallion's song lyrics)
 
 ## Questions and Analysis Plan
 
--\> I want to build a package to search text files for references to the ongoing animated series "Jojo's Bizarre Adventure" (a show known for people making references to it) and apply it to Megan Thee Stallion Lyrics (she's a fan). Because the show is about the construction of bizarre scenarios, references often include just enough identifying information to refer to a specific moment. I think the best way to approach this task is to start with a wide net that will search for single words or word pairs that could be a reference and narrow down to only songs with potential references. Then Search for accompanying words that indicate certain reference points.
+-/> I want to build a package to search text files for references to the ongoing animated series "Jojo's Bizarre Adventure" (a show known for people making references to it) and apply it to Megan Thee Stallion Lyrics (she's a fan). Because the show is about the construction of bizarre scenarios, references often include just enough identifying information to refer to a specific moment. I think the best way to approach this task is to start with a wide net that will search for single words or word pairs that could be a reference and narrow down to only songs with potential references. Then Search for accompanying words that indicate certain reference points.
 
 I think I will start with a list of potential "reference points" and build a list of indicators for each.
 
@@ -79,22 +79,52 @@ debugging stuff: (no maybe the right thing)
 ```{r}
 # Start a remote driver (e.g., using Firefox) and specify geckodriver path
 driver <- rsDriver(browser = "firefox", extraCapabilities = list(marionette = TRUE, "moz:firefoxOptions" = list(
-  binary = "path/to/firefox",
+  binary = "C:/Program Files/Mozilla Firefox/firefox.exe",
   "moz:firefoxOptions" = list(
     args = list("--headless")
   ),
-  "webdriver.gecko.driver" = "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath\\geckodriver.exe"
+  "webdriver.gecko.driver" = "C:/Program Files/Common Files/Oracle/Java/javapath/geckodriver.exe"
 )))
 remDr <- driver[["client"]]
 
 # Debugging: Print message before navigation
-cat("Navigating to URL: https://transcripts.foreverdreaming.org/viewforum.php?f=1721\n")
+cat("Navigating to URL: https://transcripts.foreverdreaming.org/viewforum.php?f=1721/n")
 
 # Navigate to the homepage
+remDr$open()
 remDr$navigate("https://transcripts.foreverdreaming.org/viewforum.php?f=1721")
 
 # Debugging: Print message after navigation
-cat("Navigation completed.\n")
+cat("Navigation completed./n")
+
+# Extracting all links
+all_links <- remDr$findElements(using = "css selector", value = "a[href]")
+
+# Filter links based on regex pattern
+# ...
+
+# Loop through filtered links and scrape text
+# ...
+
+# Stop the RSelenium server
+remDr$close()
+driver$server$stop()
+
+```
+
+debugging + trying it with chrome
+```{r}
+# Start a remote driver (e.g., using Chrome) and specify chromedriver path
+driver <- rsDriver(browser = "chrome", extraCapabilities = list(
+  "goog:chromeOptions" = list(
+    args = c()  # Optional: Add arguments for headless mode
+  ),
+  "webdriver.chrome.driver" = "C:/Users/agjjo/Downloads/chromedriver-win64/chromedriver-win64/chromedriver.exe"  # Specify path to chromedriver
+))
+remDr <- driver[["client"]]
+
+# Navigate to the homepage
+remDr$navigate("https://transcripts.foreverdreaming.org/viewforum.php?f=1721")
 
 # Extracting all links
 all_links <- remDr$findElements(using = "css selector", value = "a[href]")
@@ -135,7 +165,7 @@ all_links <- remDr$findElements(using = "css selector", value = "a[href]")
 # Filter links based on regex pattern
 #this is a REgular EXpression (regex) that describes an alphanumeric sequence with multiple possible forms, "d" stands for "any number 0-9"
 #I am saving this sequence because it matches the nomenclature of the individual episode scripts from the respository of script for JOJOS bizarre adventure that I am trying to scrape
-regex <- "0/d\\d+/d\\d+"
+regex <- "0/d//d+/d//d+"
 filtered_links <- Filter(function(link) {
   url <- link$getElementAttribute("href")[[1]]
   grepl(regex, url)
@@ -156,5 +186,6 @@ driver$server$stop()
 
 
 ```
+
 
 

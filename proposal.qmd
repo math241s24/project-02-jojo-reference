@@ -15,7 +15,9 @@ editor: visual
 #install.packages("selenider")
 #install.packages("chromote")
 #install.packages("selenium")
+#install.packages("Rcrawler")
 
+library(Rcrawler)
 library(tidyverse)
 library(RSelenium)
 library(selenider)
@@ -56,6 +58,9 @@ I still have to iron out my thoughts and start doing research.
 
 OK lets get coding
 
+
+THIS ALL FAILED (tried to use RSelenium)
+______________________________________________________________________________________
 ```{r}
 #first we have got to webscrape a bunch of non-tidy pages
 # Define the URL
@@ -186,6 +191,29 @@ driver$server$stop()
 
 
 ```
+______________________________________________________________________________________
+
+
+NOW im gonna try Rcrawler
+
+```{r}
+Rcrawler(Website = "https://transcripts.foreverdreaming.org/viewforum.php?f=1721", no_cores = 4, no_conn = 4, dataUrlfilter ="0/d//d+/d//d+")
+#ok something weird here, it slowed down a lot halfway thru "Progress: 0.58 %  :  610  parssed from  105568  | Collected pages: 0  | Level: 2"
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

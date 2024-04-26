@@ -197,12 +197,15 @@ ________________________________________________________________________________
 NOW im gonna try Rcrawler
 
 ```{r}
+#my original regex that I dont think works. This regex describes the text in the links to each episode but not the actual url: "0/d//d+/d//d+"
 Rcrawler(Website = "https://transcripts.foreverdreaming.org/viewforum.php?f=1721", 
          no_cores = 4, 
-         no_conn = 4, 
-         crawlUrlfilter = "0/d//d+/d//d+",
-         dataUrlfilter ="0/d//d+/d//d+",
-         MaxDepth = 1)
+         no_conn =4, 
+         crawlUrlfilter = "https://transcripts.foreverdreaming.org/viewtopic.php?t=[^/]+$",
+         #dataUrlfilter ="",
+         MaxDepth = 2,
+         saveOnDisk = FALSE
+         )
 #ok something weird here, it slowed down a lot halfway thru "Progress: 0.58 %  :  610  parssed from  105568  | Collected pages: 0  | Level: 2"
 
 

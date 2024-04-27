@@ -201,7 +201,7 @@ NOW im gonna try Rcrawler
 Rcrawler(Website = "https://transcripts.foreverdreaming.org/viewforum.php?f=1721", 
          no_cores = 4, 
          no_conn =4, 
-         crawlUrlfilter = "https://transcripts.foreverdreaming.org/viewtopic.php?t=[^/]+$",
+         crawlUrlfilter = "https:\/\/transcripts\.foreverdreaming\.org\/viewtopic\.php\?t=\d+&sid=[a-f0-9]+",
          #dataUrlfilter ="",
          MaxDepth = 2,
          saveOnDisk = FALSE

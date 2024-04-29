@@ -60,12 +60,11 @@ I still have to iron out my thoughts and start doing research.
 OK lets get coding
 
 
-THIS ALL FAILED (tried to use RSelenium)
-______________________________________________________________________________________
+
 ```{r}
 #first we have got to webscrape a bunch of non-tidy pages
 # Define the URL
-url_1 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=95929"
+url_e1 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=95929"
 
 # Read the HTML content from the webpage
 episode1 <- read_html(url_1)
@@ -74,13 +73,179 @@ episode1 <- read_html(url_1)
 episode_1_text <- html_text(html_nodes(episode1, ".page-body"))
 
 # View the extracted text
-print(episode_1_text)
+#print(episode_1_text)
+
+
+```
+
+just gonna brute force season three for now (using the above method)
+```{r}
+#first we have got to webscrape a bunch of non-tidy pages
+# Define the URL
+url_1 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96633"
+url_2 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96634"
+url_3 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96635"
+url_4 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96636"
+url_5 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96637"
+url_6 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96638"
+url_7 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96639"
+url_8 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96640"
+url_9 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96641"
+url_10 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96642"
+url_11 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96643"
+url_12 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96644"
+url_13 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96645"
+url_14 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96646"
+url_15 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96647"
+url_16 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96648"
+url_17 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96649"
+url_18 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96650"
+url_19 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96651"
+url_20 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96652"
+url_21 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96653"
+url_22 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96654"
+url_23 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96655"
+url_24 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96656"
+url_25 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96657"
+url_26 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96658"
+url_27 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96659"
+url_28 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96660"
+url_29 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96661"
+url_30 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96662"
+url_31 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96663"
+url_32 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96664"
+url_33 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96665"
+url_34 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96666"
+url_35 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96667"
+url_36 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96668"
+url_37 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96669"
+url_38 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96670"
+url_39 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96671"
+url_40 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96672"
+url_41 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96673"
+url_42 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96674"
+url_43 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96675"
+url_44 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96676"
+url_45 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96677"
+url_46 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96678"
+url_47 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96679"
+url_48 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=96680"
+
+
+
+
+# Read the HTML content from the webpage
+episode1 <- read_html(url_1)
+episode2 <- read_html(url_2)
+episode3 <- read_html(url_3)
+episode4 <- read_html(url_4)
+episode5 <- read_html(url_5)
+episode6 <- read_html(url_6)
+episode7 <- read_html(url_7)
+episode8 <- read_html(url_8)
+episode9 <- read_html(url_9)
+episode10 <- read_html(url_10)
+episode11 <- read_html(url_11)
+episode12 <- read_html(url_12)
+episode13 <- read_html(url_13)
+episode14 <- read_html(url_14)
+episode15 <- read_html(url_15)
+episode16 <- read_html(url_16)
+episode17 <- read_html(url_17)
+episode18 <- read_html(url_18)
+episode19 <- read_html(url_19)
+episode20 <- read_html(url_20)
+episode21 <- read_html(url_21)
+episode22 <- read_html(url_22)
+episode23 <- read_html(url_23)
+episode24 <- read_html(url_24)
+episode25 <- read_html(url_25)
+episode26 <- read_html(url_26)
+episode27 <- read_html(url_27)
+episode28 <- read_html(url_28)
+episode29 <- read_html(url_29)
+episode30 <- read_html(url_30)
+episode31 <- read_html(url_31)
+episode32 <- read_html(url_32)
+episode33 <- read_html(url_33)
+episode34 <- read_html(url_34)
+episode35 <- read_html(url_35)
+episode36 <- read_html(url_36)
+episode37 <- read_html(url_37)
+episode38 <- read_html(url_38)
+episode39 <- read_html(url_39)
+episode40 <- read_html(url_40)
+episode41 <- read_html(url_41)
+episode42 <- read_html(url_42)
+episode43 <- read_html(url_43)
+episode44 <- read_html(url_44)
+episode45 <- read_html(url_45)
+episode46 <- read_html(url_46)
+episode47 <- read_html(url_47)
+episode48 <- read_html(url_48)
+
+# Extract the text content of the "page-body" element
+episode_1_text <- html_text(html_nodes(episode1, ".page-body"))
+episode_2_text <- html_text(html_nodes(episode1, ".page-body"))
+episode_3_text <- html_text(html_nodes(episode1, ".page-body"))
+episode_4_text <- html_text(html_nodes(episode1, ".page-body"))
+episode_5_text <- html_text(html_nodes(episode1, ".page-body"))
+episode_6_text <- html_text(html_nodes(episode1, ".page-body"))
+episode_7_text <- html_text(html_nodes(episode1, ".page-body"))
+episode_8_text <- html_text(html_nodes(episode1, ".page-body"))
+episode_9_text <- html_text(html_nodes(episode1, ".page-body"))
+episode_10_text <- html_text(html_nodes(episode10, ".page-body"))
+episode_11_text <- html_text(html_nodes(episode11, ".page-body"))
+episode_12_text <- html_text(html_nodes(episode12, ".page-body"))
+episode_13_text <- html_text(html_nodes(episode13, ".page-body"))
+episode_14_text <- html_text(html_nodes(episode14, ".page-body"))
+episode_15_text <- html_text(html_nodes(episode15, ".page-body"))
+episode_16_text <- html_text(html_nodes(episode16, ".page-body"))
+episode_17_text <- html_text(html_nodes(episode17, ".page-body"))
+episode_18_text <- html_text(html_nodes(episode18, ".page-body"))
+episode_19_text <- html_text(html_nodes(episode19, ".page-body"))
+episode_20_text <- html_text(html_nodes(episode20, ".page-body"))
+episode_21_text <- html_text(html_nodes(episode21, ".page-body"))
+episode_22_text <- html_text(html_nodes(episode22, ".page-body"))
+episode_23_text <- html_text(html_nodes(episode23, ".page-body"))
+episode_24_text <- html_text(html_nodes(episode24, ".page-body"))
+episode_25_text <- html_text(html_nodes(episode25, ".page-body"))
+episode_26_text <- html_text(html_nodes(episode26, ".page-body"))
+episode_27_text <- html_text(html_nodes(episode27, ".page-body"))
+episode_28_text <- html_text(html_nodes(episode28, ".page-body"))
+episode_29_text <- html_text(html_nodes(episode29, ".page-body"))
+episode_30_text <- html_text(html_nodes(episode30, ".page-body"))
+episode_31_text <- html_text(html_nodes(episode31, ".page-body"))
+episode_32_text <- html_text(html_nodes(episode32, ".page-body"))
+episode_33_text <- html_text(html_nodes(episode33, ".page-body"))
+episode_34_text <- html_text(html_nodes(episode34, ".page-body"))
+episode_35_text <- html_text(html_nodes(episode35, ".page-body"))
+episode_36_text <- html_text(html_nodes(episode36, ".page-body"))
+episode_37_text <- html_text(html_nodes(episode37, ".page-body"))
+episode_38_text <- html_text(html_nodes(episode38, ".page-body"))
+episode_39_text <- html_text(html_nodes(episode39, ".page-body"))
+episode_40_text <- html_text(html_nodes(episode40, ".page-body"))
+episode_41_text <- html_text(html_nodes(episode41, ".page-body"))
+episode_42_text <- html_text(html_nodes(episode42, ".page-body"))
+episode_43_text <- html_text(html_nodes(episode43, ".page-body"))
+episode_44_text <- html_text(html_nodes(episode44, ".page-body"))
+episode_45_text <- html_text(html_nodes(episode45, ".page-body"))
+episode_46_text <- html_text(html_nodes(episode46, ".page-body"))
+episode_47_text <- html_text(html_nodes(episode47, ".page-body"))
+episode_48_text <- html_text(html_nodes(episode48, ".page-body"))
+
+
+# View the extracted text
+#print(episode_1_text)
 
 
 
 
 ```
 
+
+THIS ALL FAILED (tried to use RSelenium)
+______________________________________________________________________________________
 debugging stuff: (no maybe the right thing)
 ```{r}
 # Start a remote driver (e.g., using Firefox) and specify geckodriver path
@@ -195,17 +360,17 @@ driver$server$stop()
 ______________________________________________________________________________________
 
 
-NOW im gonna try Rcrawler
+NOW im gonna try Rcrawler (so far not working either)
 
 ```{r}
 #my original regex that I dont think works. This regex describes the text in the links to each episode but not the actual url: "0/d//d+/d//d+"
 Rcrawler(Website = "https://transcripts.foreverdreaming.org/viewforum.php?f=1721", 
          no_cores = 4, 
          no_conn =4, 
-         crawlUrlfilter = "https:////transcripts/.foreverdreaming/.org//viewtopic/.php/?t=/d+&sid=[a-f0-9]+",
-         #dataUrlfilter ="",
-         MaxDepth = 2,
-         saveOnDisk = FALSE
+         #crawlUrlfilter = "https:////transcripts/.foreverdreaming/.org//viewtopic/.php/?t=/d+&sid=[a-f0-9]+",
+         #dataUrlfilter = "/viewtopic",
+         MaxDepth = 1#,
+         #saveOnDisk = FALSE
          )
 #ok something weird here, it slowed down a lot halfway thru "Progress: 0.58 %  :  610  parssed from  105568  | Collected pages: 0  | Level: 2"
 

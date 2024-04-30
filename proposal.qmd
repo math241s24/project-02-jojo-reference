@@ -16,17 +16,24 @@ editor: visual
 #install.packages("chromote")
 #install.packages("selenium")
 #install.packages("Rcrawler")
+#install.packages("tidytext")
+#install.packages("purrr")
+#install.packages("glue")
 
-library(Rcrawler)
+
 library(tidyverse)
 library(RSelenium)
 library(selenider)
-library(chromote)
 library(selenium)
+library(Rcrawler)
+library(tidytext)
+library(chromote)
 library(stringr)
 library(rvest)
 library(readr)
+library(purrr)
 library(httr)
+library(glue)
 ```
 
 ## Dataset
@@ -40,11 +47,11 @@ library(httr)
 
 ## Reason for Choosing this Dataset
 
--/> Im gonna use (hopefully all of Megan Thee Stallion's song lyrics)
+-/\> Im gonna use (hopefully all of Megan Thee Stallion's song lyrics)
 
 ## Questions and Analysis Plan
 
--/> I want to build a package to search text files for references to the ongoing animated series "Jojo's Bizarre Adventure" (a show known for people making references to it) and apply it to Megan Thee Stallion Lyrics (she's a fan). Because the show is about the construction of bizarre scenarios, references often include just enough identifying information to refer to a specific moment. I think the best way to approach this task is to start with a wide net that will search for single words or word pairs that could be a reference and narrow down to only songs with potential references. Then Search for accompanying words that indicate certain reference points.
+-/\> I want to build a package to search text files for references to the ongoing animated series "Jojo's Bizarre Adventure" (a show known for people making references to it) and apply it to Megan Thee Stallion Lyrics (she's a fan). Because the show is about the construction of bizarre scenarios, references often include just enough identifying information to refer to a specific moment. I think the best way to approach this task is to start with a wide net that will search for single words or word pairs that could be a reference and narrow down to only songs with potential references. Then Search for accompanying words that indicate certain reference points.
 
 I think I will start with a list of potential "reference points" and build a list of indicators for each.
 
@@ -54,31 +61,11 @@ I still have to iron out my thoughts and start doing research.
 
 #sorry this is an incomplete proposal, Im so goddamn braindead
 
-
-
-
 OK lets get coding
 
 
-
-```{r}
-#first we have got to webscrape a bunch of non-tidy pages
-# Define the URL
-url_e1 <- "https://transcripts.foreverdreaming.org/viewtopic.php?t=95929"
-
-# Read the HTML content from the webpage
-episode1 <- read_html(url_1)
-
-# Extract the text content of the "page-body" element
-episode_1_text <- html_text(html_nodes(episode1, ".page-body"))
-
-# View the extracted text
-#print(episode_1_text)
-
-
-```
-
 just gonna brute force season three for now (using the above method) FIRST METHOD
+
 ```{r}
 #first we have got to webscrape a bunch of non-tidy pages
 # Define the URL
@@ -280,6 +267,7 @@ sentences_vector1 <- unlist(sentences1)
 ```
 
 SECOND METHOD
+
 ```{r}
 
 # Define URLs for all episodes
@@ -342,6 +330,9 @@ scrape_episode <- function(url) {
   # Extract the text content of the "page-body" element
   episode_text <- html_text(html_nodes(episode_html, ".postbody"))
   
+ # episode_text <- episode_text%>%
+    #substr(episode_text, start = 907, stop = nchar(episode_text)) NOT NEEDED I THINK, SEEMS TO SCREW WITH IT
+  
   # Remove any HTML tags and extra whitespace
   cleaned_episode <- gsub("<.*?>", "", episode_text)
   cleaned_episode <- trimws(cleaned_episode)
@@ -371,7 +362,144 @@ for (i in 1:length(urls)) {
 
 ```
 
+Turning all the episodes into a dataframe and remove stop words
+
+```{r}
+library(tidyverse)
+library(tidytext)
+
+data("stop_words")
+
+# Combine all episodes into a single data frame
+all_episodes_df <- map_dfr(all_episodes, ~ tibble(text = .x), .id = "episode")
+
+# Tokenize the text
+all_episodes_words <- all_episodes_df %>%
+  unnest_tokens(output = word, input = text) 
+
+#TRY TO REMOVE STOP WORDS
+all_episodes_words <- all_episodes_words %>%
+  anti_join(stop_words)
+```
+
+tokenize by word and plot most common words
+
+```{r}
+# Count the occurrences of each word
+word_counts <- all_episodes_words %>%
+  count(word, sort = TRUE)
+
+# Filter words with counts greater than 1000
+word_counts_filtered <- word_counts %>%
+  filter(n > 100)
+
+# Plot the word frequencies
+word_counts_filtered %>%
+  ggplot(aes(y = fct_reorder(word, n), x = n, fill = n)) +
+  geom_col() +
+  guides(fill = FALSE) +
+  labs(y = "Word", x = "Frequency") +
+  theme_minimal() +
+  ggtitle("Most Frequent Words Across All Episodes (Occurrences > 100)")
+
+```
+
+SENTIMENT ANALYSIS
+
+```{r}
+all_episodes_words %>%
+  inner_join(get_sentiments("bing"), by = "word") %>%
+  count(sentiment, word, sort = TRUE) %>%
+  group_by(sentiment) %>%
+  slice_head(n = 20) %>%
+  ggplot(aes(y = fct_reorder(word, n), x = n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free") +
+  labs(
+    title = "Sentiment and frequency of words across Stardust Crusaders",
+    subtitle = "Bing lexicon",
+    y = NULL, x = NULL
+  ) +
+  scale_fill_manual(values = c("positive" = "lightblue", "negative" = "lightcoral"))
+
+
+```
+
+SENTIMENT BY EPISODE
+
+```{r}
+
+library(tidyverse)
+library(tidytext)
+
+# Assuming all_episodes is a list of episode texts
+
+# Combine all episodes into a single data frame
+all_episodes_df <- map_dfr(all_episodes, ~ tibble(text = .x), .id = "episode")
+
+# Tokenize the text
+all_episodes_words <- all_episodes_df %>%
+  unnest_tokens(output = word, input = text) 
+
+# Get sentiments of words using the "bing" lexicon
+all_episodes_sentiments <- all_episodes_words %>%
+  inner_join(get_sentiments("bing"), by = "word") %>%
+  select(episode, sentiment)
+
+# Count the occurrences of each sentiment by episode
+sentiment_counts <- all_episodes_sentiments %>%
+  count(episode, sentiment)
+
+# Plot the sentiment counts by episode
+ggplot(sentiment_counts, aes(x = episode, y = n, fill = sentiment)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(title = "Sentiment by Episode",
+       x = "Episode",
+       y = "Count",
+       fill = "Sentiment") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
+
+#it seems to vary somewhat regularly. does this indicate that there is a regular cycle in mood built into the pacing of the show??
+```
+
+LOOKING AT BIGRAM FREQUENCY
+
+```{r}
+
+threshold <- 75
+
+# Tokenize the text
+all_episodes_bigrams <- all_episodes_df %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+  mutate(i = row_number()) %>%    # add index for later grouping
+  unnest_tokens(word, bigram, drop = FALSE) %>%    # tokenize bigrams into words
+  anti_join(stop_words) %>%    # drop rows with stop words
+  group_by(i) %>%    # group by bigram index
+  filter(n() == 2) %>%    # drop bigram instances where only one word left
+  summarise(bigram = unique(bigram), .groups = "drop")
+
+all_episodes_bigrams %>%
+  mutate(
+    bigram = if_else(bigram == "care home", "care home(s)", bigram),
+    bigram = if_else(bigram == "care homes", "care home(s)", bigram)
+  ) %>%
+  count(bigram, sort = TRUE) %>%
+  filter(n > threshold) %>%
+  ggplot(aes(y = fct_reorder(bigram, n), x = n, fill = n)) +
+  geom_col() +
+  guides(fill = FALSE) +
+  labs(
+    title = "Frequency of bigrams Stardust Crusaders",
+    subtitle = glue("Bigrams occurring more than {threshold} times"),
+    y = NULL, x = NULL
+  )
+
+```
+
 DONT THINK I NEED THIS ONE
+
 ```{r}
 # Define a list to store cleaned episode texts
 all_episodes <- list()
@@ -411,9 +539,8 @@ for (i in 1:48) {
 
 ```
 
-THIS ALL FAILED (tried to use RSelenium)
-______________________________________________________________________________________
-debugging stuff: (no maybe the right thing)
+THIS ALL FAILED (tried to use RSelenium) \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ debugging stuff: (no maybe the right thing)
+
 ```{r}
 # Start a remote driver (e.g., using Firefox) and specify geckodriver path
 driver <- rsDriver(browser = "firefox", extraCapabilities = list(marionette = TRUE, "moz:firefoxOptions" = list(
@@ -451,6 +578,7 @@ driver$server$stop()
 ```
 
 debugging + trying it with chrome
+
 ```{r}
 # Start a remote driver (e.g., using Chrome) and specify chromedriver path
 driver <- rsDriver(browser = "chrome", extraCapabilities = list(
@@ -480,6 +608,7 @@ driver$server$stop()
 ```
 
 original
+
 ```{r}
 
 # Start a remote driver (e.g., using Firefox)
@@ -524,8 +653,8 @@ driver$server$stop()
 
 
 ```
-______________________________________________________________________________________
 
+------------------------------------------------------------------------
 
 NOW im gonna try Rcrawler (so far not working either)
 
@@ -543,18 +672,3 @@ Rcrawler(Website = "https://transcripts.foreverdreaming.org/viewforum.php?f=1721
 
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

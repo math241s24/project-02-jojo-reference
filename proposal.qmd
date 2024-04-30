@@ -78,7 +78,7 @@ episode_1_text <- html_text(html_nodes(episode1, ".page-body"))
 
 ```
 
-just gonna brute force season three for now (using the above method)
+just gonna brute force season three for now (using the above method) FIRST METHOD
 ```{r}
 #first we have got to webscrape a bunch of non-tidy pages
 # Define the URL
@@ -185,8 +185,8 @@ episode47 <- read_html(url_47)
 episode48 <- read_html(url_48)
 
 # Extract the text content of the "page-body" element
-episode_1_text <- html_text(html_nodes(episode1, ".page-body"))
-episode_2_text <- html_text(html_nodes(episode1, ".page-body"))
+cleaned_episodes_s3 <- episode_1_text <- html_text(html_nodes(episode1, ".page-body"))
+cleaned_episodes_s3 <- episode_2_text <- html_text(html_nodes(episode1, ".page-body"))
 episode_3_text <- html_text(html_nodes(episode1, ".page-body"))
 episode_4_text <- html_text(html_nodes(episode1, ".page-body"))
 episode_5_text <- html_text(html_nodes(episode1, ".page-body"))
@@ -241,8 +241,175 @@ episode_48_text <- html_text(html_nodes(episode48, ".page-body"))
 
 
 
+# Remove the first 96 characters from the text
+episode_1_text <- substr(episode_1_text, start = 906, stop = nchar(episode_1_text))
+# Now you have the text content with the first 96 characters removed
+
+# Remove any HTML tags and extra whitespace
+cleaned_e1 <- gsub("<.*?>", "", episode_1_text)  # Remove HTML tags
+
+
+cleaned_e1 <- trimws(cleaned_e1)  # Remove extra whitespace
+
+
+# Remove "\n" occurrences
+cleaned_e1 <- gsub("\n", "", episode_1_text)
+
+# Remove "\n-" occurrences
+cleaned_e1 <- gsub("\n-", "", cleaned_e1)
+
+# Remove "\t" occurrences
+cleaned_e1 <- gsub("\t", "", cleaned_e1)
+
+# Remove any extra whitespace
+cleaned_e1 <- trimws(cleaned_e1)
+# Now you have the text content with "\n" and "\n-" occurrences removed
+
+
+# Split the text into sentences or paragraphs
+# Depending on the structure of your text, you might want to split it differently
+sentences1 <- strsplit(cleaned_e1, "\\.\\s+")[[1]]  # Split into sentences
+
+# Convert the sentences into a character vector
+sentences_vector1 <- unlist(sentences1)
+
+# Now you have the text content reformatted as a character vector
+# You can further process or analyze the text as needed
+
+
 ```
 
+SECOND METHOD
+```{r}
+
+# Define URLs for all episodes
+urls <- c(
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96633",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96634",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96635",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96636",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96637",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96638",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96639",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96640",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96641",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96642",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96643",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96644",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96645",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96646",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96647",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96648",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96649",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96650",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96651",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96652",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96653",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96654",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96655",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96656",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96657",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96658",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96659",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96660",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96661",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96662",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96663",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96664",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96665",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96666",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96667",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96668",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96669",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96670",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96671",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96672",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96673",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96674",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96675",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96676",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96677",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96678",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96679",
+  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96680"
+)
+
+# Define a function to scrape episode text
+scrape_episode <- function(url) {
+  # Read the HTML content from the webpage
+  episode_html <- read_html(url)
+  
+  # Extract the text content of the "page-body" element
+  episode_text <- html_text(html_nodes(episode_html, ".postbody"))
+  
+  # Remove any HTML tags and extra whitespace
+  cleaned_episode <- gsub("<.*?>", "", episode_text)
+  cleaned_episode <- trimws(cleaned_episode)
+  
+  # Remove "\n", "\n-", and "\t" occurrences
+  cleaned_episode <- gsub("\n", "", cleaned_episode)
+  cleaned_episode <- gsub("\n-", "", cleaned_episode)
+  cleaned_episode <- gsub("\t", "", cleaned_episode)
+  
+  # Remove any extra whitespace
+  cleaned_episode <- trimws(cleaned_episode)
+  
+  return(cleaned_episode)
+}
+
+# Define a list to store cleaned episode texts
+all_episodes <- list()
+
+# Scrape text for each episode
+for (i in 1:length(urls)) {
+  episode_text <- scrape_episode(urls[i])
+  all_episodes[[i]] <- episode_text
+}
+
+# Now you have a list where each element contains the cleaned text for each episode
+
+
+```
+
+DONT THINK I NEED THIS ONE
+```{r}
+# Define a list to store cleaned episode texts
+all_episodes <- list()
+
+# Iterate over each episode from 1 to 48
+for (i in 1:48) {
+  # Get the URL for the episode
+  episode_url <- paste0("https://transcripts.foreverdreaming.org/viewtopic.php?t=96633&start=", (i - 1) * 20)
+  
+  # Read the HTML content from the webpage
+  episode_html <- read_html(episode_url)
+  
+  # Extract the text content of the "page-body" element
+  episode_text <- html_text(html_nodes(episode_html, ".page-body"))
+  
+  # Remove the first 906 characters from the text
+  episode_text <- substr(episode_text, start = 907, stop = nchar(episode_text))
+  
+  # Remove any HTML tags and extra whitespace
+  cleaned_episode <- gsub("<.*?>", "", episode_text)
+  cleaned_episode <- trimws(cleaned_episode)
+  
+  # Remove "\n", "\n-", and "\t" occurrences
+  cleaned_episode <- gsub("\n", "", cleaned_episode)
+  cleaned_episode <- gsub("\n-", "", cleaned_episode)
+  cleaned_episode <- gsub("\t", "", cleaned_episode)
+  
+  # Remove any extra whitespace
+  cleaned_episode <- trimws(cleaned_episode)
+  
+  # Store the cleaned episode text in the list
+  all_episodes[[i]] <- cleaned_episode
+}
+
+# Now you have a list where each element contains the cleaned text for each episode
+
+
+```
 
 THIS ALL FAILED (tried to use RSelenium)
 ______________________________________________________________________________________

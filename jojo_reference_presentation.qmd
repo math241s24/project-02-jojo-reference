@@ -13,7 +13,6 @@ editor: visual
 # install.packages("RSelenium")
 #install.packages("selenider")
 #install.packages("chromote")
-#install.packages("selenium")
 #install.packages("Rcrawler")
 #install.packages("tidytext")
 #install.packages("purrr")
@@ -21,9 +20,6 @@ editor: visual
 
 
 library(tidyverse)
-library(RSelenium)
-library(selenider)
-library(selenium)
 library(Rcrawler)
 library(tidytext)
 library(chromote)
@@ -235,8 +231,10 @@ ggplot(sentiment_counts, aes(x = episode, y = n, fill = sentiment)) +
 LOOKING AT BIGRAM FREQUENCY
 
 ```{r}
+# Load the dplyr package
+library(dplyr)
 
-threshold <- 75
+threshold <- 20
 
 # Tokenize the text
 all_episodes_bigrams <- all_episodes_df %>%
@@ -264,4 +262,12 @@ all_episodes_bigrams %>%
     y = NULL, x = NULL
   )
 
+```
+
+THIS IS THE COMMAND TO PROCESS JUST THIS FILE NOT THE PROPOSAL
+```{R}
+#To use the terminal within RStudio, you can go to "Tools" -> "Terminal" -> "New Terminal". Then you can navigate to the directory where your project files are located and run the command there.
+#quarto preview jojo_reference_presentation.qmd --to html --no-watch-inputs --no-browse
+
+rmarkdown::render("jojo_reference_presentation.qmd")
 ```

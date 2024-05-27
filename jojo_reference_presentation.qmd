@@ -4,7 +4,6 @@ author: "Evi Jonas"
 editor: visual
 ---
 
-
 ```{r load-packages}
 #| label: load-pkgs
 #| message: false
@@ -30,7 +29,6 @@ library(purrr)
 library(httr)
 library(glue)
 ```
-
 
 ```{r}
 
@@ -91,7 +89,7 @@ scrape_episode <- function(url) {
   # Read the HTML content from the webpage
   episode_html <- read_html(url)
   
-  # Extract the text content of the "page-body" element
+  # Extract the text content of the ".post-body" element
   episode_text <- html_text(html_nodes(episode_html, ".postbody"))
   
  # episode_text <- episode_text%>%
@@ -265,6 +263,7 @@ all_episodes_bigrams %>%
 ```
 
 THIS IS THE COMMAND TO PROCESS JUST THIS FILE NOT THE PROPOSAL
+
 ```{R}
 #To use the terminal within RStudio, you can go to "Tools" -> "Terminal" -> "New Terminal". Then you can navigate to the directory where your project files are located and run the command there.
 #quarto preview jojo_reference_presentation.qmd --to html --no-watch-inputs --no-browse

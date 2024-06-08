@@ -25,209 +25,577 @@ library(chromote)
 library(stringr)
 library(rvest)
 library(readr)
+library(dplyr)
 library(purrr)
 library(httr)
 library(glue)
 ```
 
-```{r}
-
-# Define URLs for all episodes
-urls <- c(
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96633",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96634",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96635",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96636",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96637",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96638",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96639",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96640",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96641",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96642",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96643",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96644",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96645",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96646",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96647",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96648",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96649",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96650",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96651",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96652",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96653",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96654",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96655",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96656",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96657",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96658",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96659",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96660",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96661",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96662",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96663",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96664",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96665",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96666",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96667",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96668",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96669",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96670",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96671",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96672",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96673",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96674",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96675",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96676",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96677",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96678",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96679",
-  "https://transcripts.foreverdreaming.org/viewtopic.php?t=96680"
+```{r storing-all-the-urls}
+# Define URLs for all episodes organized by season
+season_urls <- list(
+  # season 1; phantom blood
+  season1 = c(
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95929",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95930",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95931",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95932",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95933",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95934",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95935",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95936",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95937"
+  ),
+  # season 2; battle tendency
+  season2 = c(
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95938",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95939",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95940",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95941",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95942",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95943",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95944",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95945",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95946",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95947",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95948",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95949",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95950",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95951",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95952",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95953",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=95954"
+  ),
+  # season 3; stardust crusaders
+  season3 = c(
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96633",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96634",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96635",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96636",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96637",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96638",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96639",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96640",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96641",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96642",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96643",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96644",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96645",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96646",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96647",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96648",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96649",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96650",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96651",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96652",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96653",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96654",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96655",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96656",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96657",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96658",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96659",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96660",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96661",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96662",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96663",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96664",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96665",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96666",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96667",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96668",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96669",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96670",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96671",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96672",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96673",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96674",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96675",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96676",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96677",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96678",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96679",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=96680"
+  ),
+  # season 4; diamond is unbreakable
+  season4 = c(
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98011",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98012",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98013",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98014",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98015",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98016",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98017",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98018",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98019",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98020",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98021",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98022",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98023",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98024",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98025",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98026",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98027",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98028",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98029",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98030",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98031",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98032",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98033",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98034",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98035",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98036",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98037",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98038",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98039"
+  ),
+  # season 5; golden wind
+  season5 = c(
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98500&sid=6002f55667a12c56a981cb365e735753",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98501",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98502",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98503",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98504",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98505",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98506",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98507",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98508",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98509",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98510",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98511",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98512",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98513",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98514",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98515",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98516",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98517",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98518",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98519",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98520",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98522",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98523",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98524",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98525",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98526",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98527",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98528",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98529",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98530",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98531",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98532",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98533",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98534",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98535",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98536",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98537",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98538",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98539",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98540",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98541",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=98542"
+  ),
+  # season 6; stone ocean
+  season6 = c(
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99249",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99250",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99251",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99252",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99253",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99254",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99255",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99256",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99257",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99258",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99259",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99260",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99261",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99262",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99263",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99264",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99265",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99266",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99267",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99268",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99269",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99270",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99271",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=99272",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120248",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120249",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120250",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120251",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120252",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120253",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120254",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120255",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120256",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120257",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120258",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120259",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120260",
+    "https://transcripts.foreverdreaming.org/viewtopic.php?t=120261"
+    
+  )
 )
 
-# Define a function to scrape episode text
+```
+
+```{r scraping-and-storing-the-data}
+# Define a function to scrape episode text with error handling and remove random spaces
 scrape_episode <- function(url) {
-  # Read the HTML content from the webpage
-  episode_html <- read_html(url)
-  
-  # Extract the text content of the ".post-body" element
-  episode_text <- html_text(html_nodes(episode_html, ".postbody"))
-  
- # episode_text <- episode_text%>%
-    #substr(episode_text, start = 907, stop = nchar(episode_text)) NOT NEEDED I THINK, SEEMS TO SCREW WITH IT
-  
-  # Remove any HTML tags and extra whitespace
-  cleaned_episode <- gsub("<.*?>", "", episode_text)
-  cleaned_episode <- trimws(cleaned_episode)
-  
-  # Remove "\n", "\n-", and "\t" occurrences
-  cleaned_episode <- gsub("\n", "", cleaned_episode)
-  cleaned_episode <- gsub("\n-", "", cleaned_episode)
-  cleaned_episode <- gsub("\t", "", cleaned_episode)
-  
-  # Remove any extra whitespace
-  cleaned_episode <- trimws(cleaned_episode)
-  
-  return(cleaned_episode)
+  tryCatch({
+    # Read the HTML content from the webpage
+    episode_html <- read_html(url)
+    
+    # Extract the text content of the ".post-body" element
+    episode_text <- html_text(html_nodes(episode_html, ".postbody"))
+    
+    # Remove any HTML tags and extra whitespace
+    cleaned_episode <- gsub("<.*?>", "", episode_text)
+    cleaned_episode <- trimws(cleaned_episode)
+    
+    # Remove "\n", "\n-", and "\t" occurrences
+    cleaned_episode <- gsub("\n", "", cleaned_episode)
+    cleaned_episode <- gsub("\n-", "", cleaned_episode)
+    cleaned_episode <- gsub("\t", "", cleaned_episode)
+    
+    # Remove any extra whitespace
+    cleaned_episode <- trimws(cleaned_episode)
+    
+    # Remove random spaces within words
+    #cleaned_episode <- gsub("(?<=\\S)\\s(?=\\S)", "", cleaned_episode, perl = TRUE)
+    
+    return(cleaned_episode)
+  }, error = function(e) {
+    message("Error scraping URL: ", url)
+    return(NA)
+  })
 }
 
-# Define a list to store cleaned episode texts
-all_episodes <- list()
+# Specify the directory paths
+base_dir <- "C:\\Users\\agjjo\\OneDrive\\Documents\\GitHub\\project-02-jojo-reference"
+season_dir <- file.path(base_dir, "seasons")
+dir.create(season_dir, showWarnings = FALSE)
 
-# Scrape text for each episode
-for (i in 1:length(urls)) {
-  episode_text <- scrape_episode(urls[i])
-  all_episodes[[i]] <- episode_text
+# Initialize a list to store all episodes' texts
+all_episodes_texts <- list()
+
+# Loop through each season and its episodes
+for (season in names(season_urls)) {
+  season_texts <- list()
+  season_path <- file.path(season_dir, season)
+  dir.create(season_path, showWarnings = FALSE)
+  
+  for (i in 1:length(season_urls[[season]])) {
+    episode_url <- season_urls[[season]][i]
+    episode_text <- scrape_episode(episode_url)
+    if (!is.na(episode_text)) {
+      episode_file <- file.path(season_path, paste0("episode_", i, ".txt"))
+      writeLines(episode_text, episode_file)
+      season_texts[[i]] <- episode_text
+      all_episodes_texts[[length(all_episodes_texts) + 1]] <- episode_text
+    }
+  }
+  
+  # Save season text to a single file
+  season_file <- file.path(season_dir, paste0(season, ".txt"))
+  writeLines(unlist(season_texts), season_file)
 }
 
-# Now you have a list where each element contains the cleaned text for each episode
+# Save all episodes to a single file
+all_episodes_file <- file.path(base_dir, "all_episodes.txt")
+writeLines(unlist(all_episodes_texts), all_episodes_file)
 
-
+# Print a message to confirm the files have been saved
+cat("All episodes have been saved.\n")
 ```
 
-Turning all the episodes into a dataframe and remove stop words
-
-```{r}
+```{r reading-the-text-file}
 library(tidyverse)
-library(tidytext)
 
-data("stop_words")
+# Specify the directory paths
+base_dir <- "C:\\Users\\agjjo\\OneDrive\\Documents\\GitHub\\project-02-jojo-reference"
+season_dir <- file.path(base_dir, "seasons")
 
-# Combine all episodes into a single data frame
-all_episodes_df <- map_dfr(all_episodes, ~ tibble(text = .x), .id = "episode")
+# Function to read text files into a data frame
+read_episodes_to_df <- function(season_dir) {
+  # List all season directories
+  season_dirs <- list.dirs(season_dir, recursive = FALSE)
+  
+  # Initialize an empty list to store data frames
+  episode_list <- list()
+  
+  # Loop through each season directory
+  for (season_path in season_dirs) {
+    season <- basename(season_path)
+    
+    # List all episode text files in the season directory
+    episode_files <- list.files(season_path, pattern = "episode_\\d+\\.txt", full.names = TRUE)
+    
+    # Read each episode file and store in a list
+    for (episode_file in episode_files) {
+      episode_number <- str_extract(basename(episode_file), "\\d+")
+      episode_text <- read_lines(episode_file) %>% 
+                      paste(collapse = " ") %>% 
+                      tolower()  # Convert to lowercase
+      
+      # Create a data frame for the current episode
+      episode_df <- tibble(
+        season = season,
+        episode = as.integer(episode_number),
+        text = episode_text
+      )
+      
+      # Append the data frame to the list
+      episode_list <- append(episode_list, list(episode_df))
+    }
+  }
+  
+  # Combine all episode data frames into one
+  all_episodes_df <- bind_rows(episode_list)
+  
+  return(all_episodes_df)
+}
 
-# Tokenize the text
-all_episodes_words <- all_episodes_df %>%
-  unnest_tokens(output = word, input = text) 
+# Call the function to read episodes into a data frame
+all_episodes_df <- read_episodes_to_df(season_dir)
 
-#TRY TO REMOVE STOP WORDS
-all_episodes_words <- all_episodes_words %>%
-  anti_join(stop_words)
+# Print the resulting data frame
+print(all_episodes_df)
+
 ```
 
-tokenize by word and plot most common words
+```{r creating-character-name-vector}
+# Define the vector of character names
+jojo_characters <- c(
+  "Jojo", "Dio",
+  "Jonathan Joestar", "Zeppeli", "Erina", "George", "Straizo", "Speedwagon",
+  "Joseph Joestar", "Lisa Lisa", "Caesar", "Stroheim", "Smokey", "Suzi", "Kars", "Esidisi", "Wamuu", "Santana",
+  "Jotaro Kujo", "Muhammad Avdol", "Kakyoin", "Polnareff", "Iggy", "Holly", "Roses", "Enya", "D’arby", "Geil", "Hol Horse",
+  "Josuke", "Koichi", "Okuyasu", "Kishibe", "Hayato", "Reimi", "Shigekiyo", "Mikitaka", "Yoshikage", "Toshikazu", "Tonio", "Aya", "Shizuka",
+  "Giorno", "Bucciarati", "Abbacchio", "Narancia", "Fugo", "Trish", "Diavolo", "Doppio",
+  "Jolyne", "Ermes", "Emporio", "F.F.", "Weather", "Anasui", "Pucci"
+)
 
-```{r}
-# Count the occurrences of each word
-word_counts <- all_episodes_words %>%
-  count(word, sort = TRUE)
+```
 
-# Filter words with counts greater than 1000
-word_counts_filtered <- word_counts %>%
-  filter(n > 100)
+```{r creating-character-mention-count-dataframe}
+library(tidyverse)
 
-# Plot the word frequencies
-word_counts_filtered %>%
-  ggplot(aes(y = fct_reorder(word, n), x = n, fill = n)) +
-  geom_col() +
-  guides(fill = FALSE) +
-  labs(y = "Word", x = "Frequency") +
+# Create the character data frame
+characters_by_season <- tibble(
+  season = c("season1", "season2", "season3", "season4", "season5", "season6"),
+  characters = list(
+    c("jojo", "dio", "jonathan joestar", "zeppeli", "erina", "george", "straizo", "speedwagon"),
+    c("joeseph joestar", "lisa lisa", "caesar", "stroheim", "smokey", "suzi", "kars", "esidisi", "wamu", "santana"),
+    c("jotaro kujo", "avdol", "kakyoin", "polnareff", "iggy", "holly", "roses", "enya", "d’arby", "geil", "hol horse"),
+    c("josuke", "koichi", "okuyasu", "kishibe", "hayato", "reimi", "shigekiyo", "mikitaka", "yoshikage", "toshikazu", "tonio", "aya", "shizuka"),
+    c("giorno", "bucciarati", "abbacchio", "narancia", "fugo", "trish", "diavolo", "doppio"),
+    c("jolyne", "ermes", "emporio", "f.f.", "weather", "anasui", "pucci", "priest")
+  )
+)
+
+# Get all unique characters
+all_characters <- characters_by_season %>%
+  pull(characters) %>%
+  unlist() %>%
+  unique() %>%
+  sort()
+
+# Initialize a data frame with all characters as columns
+character_presence_df <- tibble(season = characters_by_season$season)
+
+for (character in all_characters) {
+  character_presence_df[[character]] <- 0
+}
+
+# Fill the data frame with 1s for character presence
+for (i in 1:nrow(characters_by_season)) {
+  season <- characters_by_season$season[i]
+  characters <- characters_by_season$characters[[i]]
+  
+  for (character in characters) {
+    character_presence_df[character_presence_df$season == season, character] <- 1
+  }
+}
+
+# Join the character presence data frame with the all_episodes_df
+seasons_df <- left_join(all_episodes_df, character_presence_df, by = "season")
+
+# Add columns for character mentions per episode
+for (character in all_characters) {
+  seasons_df[[character]] <- str_count(seasons_df$text, fixed(character))
+}
+
+# Add a column for the most prominent character in each episode
+seasons_df <- seasons_df %>%
+  rowwise() %>%
+  mutate(
+    prominent = all_characters[which.max(c_across(all_of(all_characters)))]
+  ) %>%
+  ungroup()
+
+# Calculate the ratio of mentions for each character to the most mentioned character in each episode
+jojo_reletivism <- seasons_df %>%
+  rowwise() %>%
+  mutate(
+    max_mentions = max(c_across(all_of(all_characters)))
+  ) %>%
+  pivot_longer(cols = all_of(all_characters), names_to = "character", values_to = "mentions") %>%
+  mutate(
+    ratio = ifelse(max_mentions > 0, mentions / max_mentions, 0)
+  ) %>%
+  select(season, episode, character, ratio) %>%
+  ungroup()
+
+# Print the resulting data frame
+print(jojo_reletivism)
+
+```
+
+```{r creating-relative-measure-of-character-presence}
+library(tidyverse)
+
+# Filter out episodes where the character has no mentions
+filtered_jojo_reletivism <- jojo_reletivism %>%
+  filter(ratio > 0)
+
+# Calculate the average ratio for each character within each season
+average_ratios_by_season <- filtered_jojo_reletivism %>%
+  group_by(season, character) %>%
+  summarize(average_ratio = mean(ratio, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(average_ratio > 0)  # Exclude characters with an average ratio of zero
+
+# Create the bar plot for each season
+ggplot(average_ratios_by_season, aes(x = reorder(character, -average_ratio), y = average_ratio, fill = season)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ season, scales = "free_x") +
+  labs(title = "Average Ratio of Mentions for Each Character by Season",
+       x = "Character",
+       y = "Average Ratio") +
   theme_minimal() +
-  ggtitle("Most Frequent Words Across All Episodes (Occurrences > 100)")
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
 
 ```
 
-SENTIMENT ANALYSIS
-
-```{r}
-all_episodes_words %>%
-  inner_join(get_sentiments("bing"), by = "word") %>%
-  count(sentiment, word, sort = TRUE) %>%
-  group_by(sentiment) %>%
-  slice_head(n = 20) %>%
-  ggplot(aes(y = fct_reorder(word, n), x = n, fill = sentiment)) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~sentiment, scales = "free") +
-  labs(
-    title = "Sentiment and frequency of words across Stardust Crusaders",
-    subtitle = "Bing lexicon",
-    y = NULL, x = NULL
-  ) +
-  scale_fill_manual(values = c("positive" = "lightblue", "negative" = "lightcoral"))
-
-
-```
-
-SENTIMENT BY EPISODE
-
-```{r}
-
+```{r sentiment-analysis-all-seasons}
 library(tidyverse)
 library(tidytext)
 
-# Assuming all_episodes is a list of episode texts
-
-# Combine all episodes into a single data frame
-all_episodes_df <- map_dfr(all_episodes, ~ tibble(text = .x), .id = "episode")
-
 # Tokenize the text
-all_episodes_words <- all_episodes_df %>%
-  unnest_tokens(output = word, input = text) 
+all_episodes_words <- seasons_df %>%
+  unnest_tokens(word, text)
 
 # Get sentiments of words using the "bing" lexicon
 all_episodes_sentiments <- all_episodes_words %>%
   inner_join(get_sentiments("bing"), by = "word") %>%
-  select(episode, sentiment)
+  mutate(sentiment_score = ifelse(sentiment == "positive", 1, -1)) %>%
+  select(season, episode, sentiment_score)
 
-# Count the occurrences of each sentiment by episode
-sentiment_counts <- all_episodes_sentiments %>%
-  count(episode, sentiment)
+# Calculate the total sentiment score for each episode
+sentiment_scores <- all_episodes_sentiments %>%
+  group_by(season, episode) %>%
+  summarize(total_sentiment_score = sum(sentiment_score)) %>%
+  ungroup()
 
-# Plot the sentiment counts by episode
-ggplot(sentiment_counts, aes(x = episode, y = n, fill = sentiment)) +
-  geom_bar(stat = "identity", position = "stack") +
-  labs(title = "Sentiment by Episode",
+# Join sentiment scores with the prominent character information
+sentiment_scores <- sentiment_scores %>%
+  left_join(seasons_df %>% select(season, episode, prominent), by = c("season", "episode"))
+
+# Plot the sentiment scores as a line graph with a zero line and prominent character labels
+ggplot(sentiment_scores, aes(x = episode, y = total_sentiment_score, group = season, color = season)) +
+  geom_line() +
+  geom_point() +
+  geom_text(aes(label = prominent), vjust = -1, size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  facet_wrap(~ season, scales = "free_x") +
+  labs(title = "Total Sentiment Score by Episode and Season",
        x = "Episode",
-       y = "Count",
-       fill = "Sentiment") +
+       y = "Total Sentiment Score",
+       color = "Season") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
+```
+
+```{r EXPERIEMENTAL}
+library(tidyverse)
+library(tidytext)
+
+# Tokenize the text
+all_episodes_words <- seasons_df %>%
+  unnest_tokens(word, text)
+
+# Get sentiments of words using the "bing" lexicon
+all_episodes_sentiments <- all_episodes_words %>%
+  inner_join(get_sentiments("bing"), by = "word") %>%
+  mutate(sentiment_score = ifelse(sentiment == "positive", 1, -1)) %>%
+  select(season, episode, sentiment_score)
+
+# Calculate the total sentiment score for each episode
+sentiment_scores <- all_episodes_sentiments %>%
+  group_by(season, episode) %>%
+  summarize(total_sentiment_score = sum(sentiment_score)) %>%
+  ungroup()
+
+# Join sentiment scores with the prominent character information
+sentiment_scores <- sentiment_scores %>%
+  left_join(seasons_df %>% select(season, episode, prominent), by = c("season", "episode"))
+
+# Create the jojo_relativity data frame with the ratios
+jojo_reletivism <- seasons_df %>%
+  rowwise() %>%
+  mutate(max_mentions = max(c_across(all_of(all_characters)))) %>%
+  ungroup() %>%
+  pivot_longer(cols = all_of(all_characters), names_to = "character", values_to = "mentions") %>%
+  mutate(ratio = mentions / max_mentions) %>%
+  filter(ratio > 0)
+
+# Merge jojo_reletivism with sentiment_scores
+jojo_with_sentiment <- jojo_reletivism %>%
+  left_join(sentiment_scores, by = c("season", "episode"))
+
+# Plot the character's ratio against the average sentiment score
+ggplot(jojo_with_sentiment, aes(x = ratio, y = total_sentiment_score, group = character, color = character)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ character, scales = "free_y") +
+  labs(title = "Character's Ratio of Mentions vs. Average Sentiment of Episodes",
+       x = "Character's Ratio of Mentions",
+       y = "Average Sentiment Score") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
 
 
-#it seems to vary somewhat regularly. does this indicate that there is a regular cycle in mood built into the pacing of the show??
+```
+
+```{r graphing-average-character-mention-ratios}
+library(tidyverse)
+
+# Assuming jojo_reletivism is already created as per the previous instructions
+# Filter out episodes where the character has no mentions
+filtered_jojo_reletivism <- jojo_reletivism %>%
+  filter(ratio > 0)
+
+# Calculate the average ratio for each character
+average_ratios <- filtered_jojo_reletivism %>%
+  group_by(character) %>%
+  summarize(average_ratio = mean(ratio, na.rm = TRUE)) %>%
+  ungroup()
+
+# Create the bar plot
+ggplot(average_ratios, aes(x = reorder(character, -average_ratio), y = average_ratio)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Average Ratio of Mentions for Each Character",
+       x = "Character",
+       y = "Average Ratio") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
 ```
 
 LOOKING AT BIGRAM FREQUENCY
-
 ```{r}
 # Load the dplyr package
 library(dplyr)
@@ -263,7 +631,6 @@ all_episodes_bigrams %>%
 ```
 
 THIS IS THE COMMAND TO PROCESS JUST THIS FILE NOT THE PROPOSAL
-
 ```{R}
 #To use the terminal within RStudio, you can go to "Tools" -> "Terminal" -> "New Terminal". Then you can navigate to the directory where your project files are located and run the command there.
 #quarto preview jojo_reference_presentation.qmd --to html --no-watch-inputs --no-browse
